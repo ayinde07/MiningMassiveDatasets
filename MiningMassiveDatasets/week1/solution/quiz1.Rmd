@@ -1,0 +1,282 @@
+---
+title: "Quiz Week 1"
+author: "Manuel Bordes"
+date: "05/02/2015"
+output: html_document
+---
+Question 1
+-----------
+> Consider three Web pages with the following links:
+
+> ![title](/home/blur-exlin-002/Desktop/DesktopQ3/prueba/Interes/graph1.png)
+
+> Suppose we compute PageRank with a β of 0.7, and we introduce the additional constraint
+that the sum of the PageRanks of the three pages must be 3, to handle the problem that
+otherwise any multiple of a solution will also be a solution. Compute the PageRanks a, b,
+and c of the three pages A, B, and C, respectively. Then, identify from the list below, the true
+statement.
+
+We are going to create the equation of pageRank:
+
+
+$r = \beta M r +[\frac{(1 - \beta)}{N}]_{N}$  ,
+
+where $[\frac{(1 - \beta)}{N}]_{N}$ is a vector with all $N$ entries $(1-\beta )/{N}$
+
+In each iteration, we need to:
+
+- Compute $r^{new} = \beta M r^{old}$
+- Add a contstant value $(1-\beta )/{N}$ to each entry in $r^{new}$
+
+We will call $t$ (teleport link) to the vector  $[\frac{(1-\beta)}{N}]_{N}$  
+
+So the equation is equal to 
+
+$r = \beta M r +t$  ,
+
+
+Let's start define the parameters
+
+$\beta=0.7$
+
+```{r}
+beta <- 0.7
+```
+
+Number of nodes is equal to  3
+
+$n = 3$ 
+
+```{r}
+n <- 3
+```
+
+The teleport link
+```{r}
+# jumping to a random page/teleportation (i.e., 1 - B)
+t <- matrix(nrow = n, ncol = 1, rep((1-beta)/n,n))
+```
+
+
+The matrix 
+$M=\left(\begin{array}{lcr}0 & 0 & 0 \\ \frac{1}{2} & 0 & 0\\ \frac{1}{2} & 1 & 1\end{array}\right)$
+
+```{r}
+M <- matrix(c(0, 0.5, 0.5, 0, 0, 1, 0, 0, 1), nrow = 3)
+M
+```
+
+```{r}
+# rank vector (i.e., initialize page rank)
+r <- matrix(c(1/3, 1/3, 1/3), ncol = 1)
+r 
+```
+
+```{r}
+# PageRank: Power Iteration (i.e., iterate until r does not change)
+r <- beta * M %*% r + t
+r
+r <- beta * M %*% r + t
+r
+r <- beta * M %*% r + t
+r
+r <- beta * M %*% r + t
+r
+```
+
+r hasn't changed in the last iteration
+
+
+
+- a + b = 0.655 FALSE
+```{r}
+# a + b
+(r[1] + r[2]) * 3 
+```
+- a + c = 2.035 FALSE
+```{r}
+# a + c
+(r[1] + r[3]) * 3 
+```
+
+- a + c = 2.595 TRUE
+```{r}
+# a + C
+(r[1] + r[3]) * 3 
+```
+- b + c = 2.5 FALSE
+```{r}
+# b + c
+(r[2] + r[3]) * 3 
+```
+
+
+Question 2
+----------
+
+> Consider three Web pages with the following links:
+
+> ![title](/home/blur-exlin-002/Desktop/DesktopQ3/prueba/Interes/CourseMiningMassiveDatasets/Assigment/week1/solution/graph2.png)
+
+> Suppose we compute PageRank with β=0.85. Write the equations for the PageRanks a, b,
+and c of the three pages A, B, and C, respectively. Then, identify in the list below, one of the
+equations.
+
+> - a + c = 2.035 
+> - a + c = 2.595 
+> - b + c = 2.5 
+
+Let's start define the parameters
+
+
+$\beta=0.85$
+
+```{r}
+beta <- 0.85
+```
+
+Number of nodes is equal to  3
+
+$n = 3$ 
+
+```{r}
+n <- 3
+```
+
+The teleport link
+```{r}
+# jumping to a random page/teleportation (i.e., 1 - B)
+t <- matrix(nrow = n, ncol = 1, rep((1-beta)/n,n))
+```
+
+
+The matrix 
+$M=\left(\begin{array}{lcr}0 & 0 & 1 \\ \frac{1}{2} & 0 & 0\\ \frac{1}{2} & 1 & 0\end{array}\right)$
+
+```{r}
+M <- matrix(c(0, 0.5, 0.5, 0, 0, 1, 1, 0, 0), nrow = 3)
+M
+```
+
+```{r}
+# rank vector (i.e., initialize page rank)
+r <- matrix(c(1/3, 1/3, 1/3), ncol = 1)
+r 
+```
+
+
+```{r}
+# PageRank: Power Iteration (i.e., iterate until r does not change)
+
+for (i in 1:30) {
+    r <- beta * M %*% r + t
+}
+r
+r <- beta * M %*% r + t
+r
+
+```
+
+Afer  30 iterations converge
+
+
+```{r}
+# rank vector (i.e., initialize page rank)
+if(round(r[1],5) == round((r[2]+0.15),5)) {
+    print('a = c + .15b')
+}else{
+    print('a != c + .15b')
+}
+if(round(r[1],5)==round(0.9*r[3] + 0.05 * r[2],5)) {
+    print('a = .9c + .05b')
+}else{
+    print('a != .9c + .05b')
+}
+
+if(round(0.95*r[2],5)== round(0.475 * r[1] + 0.05* r[3],5)) {
+    print('.95b = .475a + .05c')
+}else{
+    print('.95b != .475a + .05c')
+}
+
+if(round(0.85*r[1],5) == round( r[3]+0.15* r[2],5)) {
+    print('.85a = c + .15b')
+}else{
+    print('.85a != c + .15b')
+}
+
+```
+
+Question 3
+----------
+> Consider three Web pages with the following links:
+> ![title](/home/blur-exlin-002/Desktop/DesktopQ3/prueba/Interes/CourseMiningMassiveDatasets/Assigment/week1/solution/graph2.png)
+
+> Assuming no "taxation," compute the PageRanks a, b, and c of the three pages A, B, and C,
+using iteration, starting with the "0th" iteration where all three pages have rank a = b = c = 1.
+
+> Compute as far as the 5th iteration, and also determine what the PageRanks are in the limit.
+Then, identify the true statement from the list below.
+
+> - After iteration 5, a = 21/16
+> - After iteration 5, b = 5/8
+> - After iteration 5, b = 1/2
+> - After iteration 5, b = 9/16
+
+Let's start define the parameters
+
+
+
+The matrix 
+$M=\left(\begin{array}{lcr}0 & 0 & 1 \\ \frac{1}{2} & 0 & 0\\ \frac{1}{2} & 1 & 0\end{array}\right)$
+
+```{r}
+M <- matrix(c(0, 0.5, 0.5, 0, 0, 1, 1, 0, 0), nrow = 3)
+M
+```
+
+```{r}
+# rank vector (i.e., initialize page rank)
+r <- matrix(c(1, 1, 1), ncol = 1)
+```
+
+```{r}
+# rank vector (i.e., initialize page rank)
+r <- M %*% r
+r
+for (i in 1:5) {
+    r <-  M %*% r
+}
+r
+```
+
+```{r}
+option_1_a<-21/16
+option_2_b<-5/8
+option_3_b<-1/2
+option_4_b<-9/16
+
+option_1_a
+option_2_b
+option_3_b
+option_4_b
+
+```
+
+
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+summary(cars)
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
